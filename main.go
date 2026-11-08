@@ -29,6 +29,9 @@ const (
 	feedURL       = "https://science.nasa.gov/feed/apod-basic/"
 )
 
+// version is set at release build time with -ldflags "-X main.version=vX.Y.Z".
+var version = "dev"
+
 type app struct {
 	dir     string
 	client  *http.Client
@@ -45,6 +48,7 @@ func main() {
 	if f, err := os.OpenFile(filepath.Join(dir, "apod.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644); err == nil {
 		log.SetOutput(f)
 	}
+	log.Printf("apod-wallpaper %s starting", version)
 	if !singleInstance() {
 		log.Print("already running; exiting")
 		return

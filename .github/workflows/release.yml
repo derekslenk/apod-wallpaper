@@ -1,0 +1,57 @@
+name: CI and release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./...
+
+  release:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    concurrency: release
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      # Only computes the next version and changelog; `gh release create` makes the tag
+      # after the build succeeds, so a failed build never leaves a tag without a release.
+      - id: version
+        uses: mathieudutour/github-tag-action@v7
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_analyzer_preset: angular
+          default_bump: false
+          dry_run: true
+      - if: steps.version.outputs.new_tag != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.new_tag }}
+          NOTES: ${{ steps.version.outputs.changelog }}
+          CGO_ENABLED: "0"
+        run: |
+          for arch in amd64 arm64; do
+            GOARCH=$arch go build -ldflags "-H windowsgui -s -w -X main.version=$TAG" -o "apod-wallpaper-$arch.exe" .
+          done
+          gh release create "$TAG" apod-wallpaper-amd64.exe apod-wallpaper-arm64.exe \
+            --target "$GITHUB_SHA" --title "$TAG" --notes "$NOTES"

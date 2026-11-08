@@ -1,3 +1,7 @@
+## Commits
+
+Use the Angular commit format (`feat:`, `fix:`, `docs:`, `chore:`, `ci:`, `refactor:`, `test:`; `BREAKING CHANGE:` footer for majors). CI derives release versions from it, so a wrong type ships the wrong version.
+
 ## Agent skills
 
 ### Issue tracker

@@ -2,7 +2,7 @@
 
 A small Windows tray app that sets NASA's [Astronomy Picture of the Day](https://science.nasa.gov/apod/) as your desktop wallpaper, every day, on every monitor.
 
-- **Largest monitor** gets today's picture; **every other monitor** gets yesterday's.
+- **The monitor with the most pixels** gets the latest picture; **every other monitor** gets the one before it.
 - **Full resolution:** downloads NASA's original image, not the resized preview.
 - **Never cropped or stretched:** the picture is centered at full height, and the bars beside it are filled with colors taken from the picture's own edges, so they blend in.
 - **Video days** are skipped. If today's APOD is a video, the most recent still picture is used instead.
@@ -20,16 +20,20 @@ Right-click the tray icon:
 | **Bar style → Crisp follow** | Bars track the picture's edge closely, keeping features like the horizon sharper |
 | **Quit** | Exit the app |
 
-Hovering over the icon shows today's picture title.
+Hovering over the icon shows the latest picture's title.
+
+## Download
+
+Get `apod-wallpaper-amd64.exe` (or `apod-wallpaper-arm64.exe` for Windows on ARM) from the [latest release](https://github.com/derekslenk/apod-wallpaper/releases/latest) and run it. The exe isn't code-signed, so the first time, Windows SmartScreen may warn about an unknown publisher: choose **More info → Run anyway**.
 
 ## Requirements
 
 - Windows 10 or 11
-- [Go](https://go.dev/) 1.27+ to build (e.g. `mise use go@latest`)
+- [Go](https://go.dev/) 1.27+, only to build from source (e.g. `mise use go@latest`)
 
 No NASA API key is needed.
 
-## Build and run
+## Build from source
 
 ```sh
 go build -ldflags "-H windowsgui -s -w" -o apod-wallpaper.exe .
@@ -78,6 +82,8 @@ go vet ./...
 ```
 
 The rendering, feed parsing, monitor assignment and cleanup logic are plain Go with unit tests. Windows-specific code (COM wallpaper calls, tray, registry) is in the `*_windows.go` files and `main.go`.
+
+Commit messages use the [Angular format](https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md). They drive releases: every push to `main` with a `fix:` commit publishes a patch release, `feat:` a minor release, and a `BREAKING CHANGE:` footer a major one. Pushes containing only `docs:`, `chore:`, `ci:`, `refactor:` or `test:` commits don't release anything.
 
 ## Credits
 
