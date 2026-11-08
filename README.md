@@ -93,4 +93,6 @@ Commit messages use the [Angular format](https://github.com/angular/angular/blob
 
 ## Credits
 
+This is an unofficial app. It is not affiliated with or endorsed by NASA or Astronomy Picture of the Day.
+
 Pictures and descriptions come from NASA's [Astronomy Picture of the Day](https://science.nasa.gov/apod/), by Robert Nemiroff and Jerry Bonnell. Many APOD images are copyrighted by their photographers, so check each image's credit before reusing it anywhere else.
