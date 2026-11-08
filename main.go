@@ -22,11 +22,12 @@ import (
 )
 
 const (
-	checkInterval = 3 * time.Hour
-	retryInterval = 5 * time.Minute
-	keepImages    = 7
-	todayPage     = "https://science.nasa.gov/apod/"
-	feedURL       = "https://science.nasa.gov/feed/apod-basic/"
+	checkInterval  = 3 * time.Hour
+	retryInterval  = 5 * time.Minute
+	updateInterval = 24 * time.Hour
+	keepImages     = 7
+	todayPage      = "https://science.nasa.gov/apod/"
+	feedURL        = "https://science.nasa.gov/feed/apod-basic/"
 )
 
 // version is set at release build time with -ldflags "-X main.version=vX.Y.Z".
@@ -38,6 +39,7 @@ type app struct {
 	trigger chan struct{}
 	mu      sync.Mutex   // serializes refreshes
 	style   atomic.Value // BarStyle; set from the tray menu, read by refresh
+	update  atomic.Value // string: page of a newer release, once one is found
 }
 
 func main() {
@@ -68,6 +70,8 @@ func main() {
 func (a *app) onReady() {
 	systray.SetIcon(makeIcon())
 	systray.SetTooltip("APOD Wallpaper")
+	mUpdate := systray.AddMenuItem("Update available", "Open the release page")
+	mUpdate.Hide()
 	mRefresh := systray.AddMenuItem("Refresh now", "Fetch the latest APOD")
 	mOpen := systray.AddMenuItem("Open today's APOD page", "Open apod.nasa.gov")
 	mStyle := systray.AddMenuItem("Bar style", "How the side bars blend with the picture")
@@ -89,6 +93,10 @@ func (a *app) onReady() {
 	go func() {
 		for {
 			select {
+			case <-mUpdate.ClickedCh:
+				if u, _ := a.update.Load().(string); u != "" {
+					openURL(u)
+				}
 			case <-mRefresh.ClickedCh:
 				a.requestRefresh()
 			case <-mOpen.ClickedCh:
@@ -106,6 +114,44 @@ func (a *app) onReady() {
 		}
 	}()
 	go a.loop()
+	go a.updateLoop(mUpdate)
+}
+
+// updateLoop checks GitHub for a newer release at startup and then daily, and
+// shows mUpdate when one exists. Failures only log; the next check is a day later.
+func (a *app) updateLoop(mUpdate *systray.MenuItem) {
+	if _, ok := parseVersion(version); !ok {
+		log.Printf("update check skipped: version %q is not a release build", version)
+		return
+	}
+	for {
+		if tag, page, err := a.latestRelease(); err != nil {
+			log.Printf("update check failed: %v", err)
+		} else if newerVersion(version, tag) {
+			a.update.Store(page)
+			mUpdate.SetTitle("Update available: " + tag)
+			mUpdate.Show()
+			log.Printf("update available: %s", tag)
+		}
+		time.Sleep(updateInterval)
+	}
+}
+
+func (a *app) latestRelease() (tag, page string, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(ctx, "GET", latestReleaseAPI, nil)
+	req.Header.Set("User-Agent", "apod-wallpaper")
+	req.Header.Set("Accept", "application/vnd.github+json")
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", "", fmt.Errorf("GitHub releases: HTTP %s", resp.Status)
+	}
+	return parseLatestRelease(resp.Body)
 }
 
 func (a *app) barStyle() BarStyle { return a.style.Load().(BarStyle) }
