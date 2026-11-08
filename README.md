@@ -24,7 +24,13 @@ Hovering over the icon shows the latest picture's title.
 
 ## Download
 
-Get `apod-wallpaper-amd64.exe` (or `apod-wallpaper-arm64.exe` for Windows on ARM) from the [latest release](https://github.com/derekslenk/apod-wallpaper/releases/latest) and run it. The exe isn't code-signed, so the first time, Windows SmartScreen may warn about an unknown publisher: choose **More info → Run anyway**.
+Get `apod-wallpaper-amd64.exe` (or `apod-wallpaper-arm64.exe` for Windows on ARM) from the [latest release](https://github.com/derekslenk/apod-wallpaper/releases/latest).
+
+Put it in `%LOCALAPPDATA%\Programs\APOD Wallpaper\` (paste that into File Explorer's address bar and create the folder), then run it from there. Don't run it from Downloads: the app starts itself at login from wherever it was first run, so it stops working if that copy is cleaned up.
+
+The exe isn't code-signed, so the first time, Windows SmartScreen may warn about an unknown publisher: choose **More info → Run anyway**.
+
+**To update:** when the tray menu shows **Update available**, download the new exe, right-click the tray icon → **Quit**, replace the exe in that folder (keep the same file name), and run it again.
 
 ## Requirements
 
