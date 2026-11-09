@@ -20,7 +20,7 @@ Right-click the tray icon:
 | **Bar style → Crisp follow** | Bars track the picture's edge closely, keeping features like the horizon sharper |
 | **Quit** | Exit the app |
 
-Hovering over the icon shows the latest picture's title.
+Hovering over the icon shows "Nightglass:" and the latest picture's title.
 
 ## Download
 

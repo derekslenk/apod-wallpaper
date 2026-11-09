@@ -238,9 +238,10 @@ func (a *app) refresh() error {
 	}); err != nil {
 		return err
 	}
-	tip := "APOD: " + imgs[0].Title
+	tip := "Nightglass: " + imgs[0].Title
 	if len(tip) > 120 {
-		tip = tip[:120] + "…"
+		// The byte cut can split a multi-byte character; drop the partial one.
+		tip = strings.ToValidUTF8(tip[:120], "") + "…"
 	}
 	systray.SetTooltip(tip)
 	log.Printf("wallpaper set: today=%s", imgs[0].Date)
