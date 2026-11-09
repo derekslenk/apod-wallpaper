@@ -14,6 +14,8 @@ Right-click the tray icon:
 
 | Item | What it does |
 |------|--------------|
+| **Nightglass vX.Y.Z** | Shows the version you're running (greyed out) |
+| **Update available: vX.Y.Z** | Appears only when a newer release exists; opens its download page |
 | **Refresh now** | Check NASA and re-apply the wallpapers immediately |
 | **Open today's APOD page** | Opens science.nasa.gov/apod in your browser |
 | **Bar style → Soft blend** | Bars fade gently; sharp features like a horizon blur into a smooth gradient (default) |

@@ -76,8 +76,10 @@ func main() {
 func (a *app) onReady() {
 	systray.SetIcon(makeIcon())
 	systray.SetTooltip("Nightglass")
+	systray.AddMenuItem("Nightglass "+version, "").Disable()
 	mUpdate := systray.AddMenuItem("Update available", "Open the release page")
 	mUpdate.Hide()
+	systray.AddSeparator()
 	mRefresh := systray.AddMenuItem("Refresh now", "Fetch the latest APOD")
 	mOpen := systray.AddMenuItem("Open today's APOD page", "Open science.nasa.gov/apod")
 	mStyle := systray.AddMenuItem("Bar style", "How the side bars blend with the picture")
