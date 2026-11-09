@@ -51,7 +51,7 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           for arch in amd64 arm64; do
-            GOARCH=$arch go build -ldflags "-H windowsgui -s -w -X main.version=$TAG" -o "apod-wallpaper-$arch.exe" .
+            GOARCH=$arch go build -ldflags "-H windowsgui -s -w -X main.version=$TAG" -o "nightglass-$arch.exe" .
           done
-          gh release create "$TAG" apod-wallpaper-amd64.exe apod-wallpaper-arm64.exe \
+          gh release create "$TAG" nightglass-amd64.exe nightglass-arm64.exe \
             --target "$GITHUB_SHA" --title "$TAG" --notes "$NOTES"

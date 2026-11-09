@@ -6,7 +6,7 @@ Use the Angular commit format (`feat:`, `fix:`, `docs:`, `chore:`, `ci:`, `refac
 
 ### Issue tracker
 
-Issues live in GitHub Issues on derekslenk/apod-wallpaper (via `gh`). See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues on derekslenk/nightglass (via `gh`). See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

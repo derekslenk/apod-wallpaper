@@ -1,4 +1,4 @@
-# APOD Wallpaper
+# Nightglass
 
 A Windows tray app that turns NASA's Astronomy Picture of the Day into a per-monitor desktop wallpaper.
 

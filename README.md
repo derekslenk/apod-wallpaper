@@ -1,6 +1,6 @@
-# APOD Wallpaper
+# Nightglass
 
-A small Windows tray app that sets NASA's [Astronomy Picture of the Day](https://science.nasa.gov/apod/) as your desktop wallpaper, every day, on every monitor.
+Nightglass is a small Windows tray app that sets NASA's [Astronomy Picture of the Day](https://science.nasa.gov/apod/) (APOD) as your desktop wallpaper, every day, on every monitor. It was formerly called **APOD Wallpaper**.
 
 - **The monitor with the most pixels** gets the latest picture; **every other monitor** gets the one before it.
 - **Full resolution:** downloads NASA's original image, not the resized preview.
@@ -24,13 +24,15 @@ Hovering over the icon shows the latest picture's title.
 
 ## Download
 
-Get `apod-wallpaper-amd64.exe` (or `apod-wallpaper-arm64.exe` for Windows on ARM) from the [latest release](https://github.com/derekslenk/apod-wallpaper/releases/latest).
+Get `nightglass-amd64.exe` (or `nightglass-arm64.exe` for Windows on ARM) from the [latest release](https://github.com/derekslenk/nightglass/releases/latest).
 
-Put it in `%LOCALAPPDATA%\Programs\APOD Wallpaper\` (paste that into File Explorer's address bar and create the folder), then run it from there. Don't run it from Downloads: the app starts itself at login from wherever it was first run, so it stops working if that copy is cleaned up.
+Put it in `%LOCALAPPDATA%\Programs\Nightglass\` (paste that into File Explorer's address bar and create the folder), then run it from there. Don't run it from Downloads: the app starts itself at login from wherever it was first run, so it stops working if that copy is cleaned up.
 
 The exe isn't code-signed, so the first time, Windows SmartScreen may warn about an unknown publisher: choose **More info → Run anyway**.
 
 **To update:** when the tray menu shows **Update available**, download the new exe, right-click the tray icon → **Quit**, replace the exe in that folder (keep the same file name), and run it again.
+
+**Coming from APOD Wallpaper?** Quit it, put `nightglass-amd64.exe` in the folder above, and run it. On first run it takes over the old startup entry and moves your settings and downloaded pictures from `%LOCALAPPDATA%\APOD\`. Then delete the old `apod-wallpaper.exe`. The old app's update check doesn't recognize the renamed project, so it won't announce this release.
 
 ## Requirements
 
@@ -42,8 +44,8 @@ No NASA API key is needed.
 ## Build from source
 
 ```sh
-go build -ldflags "-H windowsgui -s -w" -o apod-wallpaper.exe .
-./apod-wallpaper.exe
+go build -ldflags "-H windowsgui -s -w" -o nightglass.exe .
+./nightglass.exe
 ```
 
 `-H windowsgui` keeps a console window from opening. On first run the app registers itself to start at login (per-user, no admin needed). If you move the `.exe`, run it once from the new location and the startup entry updates itself.
@@ -52,14 +54,14 @@ Only one copy runs at a time; launching it again does nothing.
 
 ## Files
 
-Everything lives in `%LOCALAPPDATA%\APOD\`:
+Everything lives in `%LOCALAPPDATA%\Nightglass\`:
 
 | Path | Contents |
 |------|----------|
 | `YYYY-MM-DD.jpg` / `.png` | Downloaded originals (the newest 7 are kept) |
 | `rendered\` | Wallpapers rendered at each monitor's exact resolution |
 | `settings.json` | Your bar style choice |
-| `apod.log` | Activity and errors |
+| `nightglass.log` | Activity and errors |
 
 ## How it works
 
@@ -70,15 +72,15 @@ Everything lives in `%LOCALAPPDATA%\APOD\`:
 
 ## Troubleshooting
 
-**All monitors show the same picture, or not an APOD at all.** Another wallpaper app is probably overriding this one. Microsoft Bing Wallpaper does this, and so can Wallpaper Engine and Lively. Quit it and disable its startup entry. The app logs a `WARNING` in `apod.log` when it sees one of these running.
+**All monitors show the same picture, or not an APOD at all.** Another wallpaper app is probably overriding this one. Microsoft Bing Wallpaper does this, and so can Wallpaper Engine and Lively. Quit it and disable its startup entry. The app logs a `WARNING` in `nightglass.log` when it sees one of these running.
 
-**Nothing changes.** Check `apod.log`. Network failures are retried after 5 minutes.
+**Nothing changes.** Check `nightglass.log`. Network failures are retried after 5 minutes.
 
 ## Uninstall
 
 1. Right-click the tray icon → **Quit**.
-2. Remove the `APOD Wallpaper` entry in **Settings → Apps → Startup** (or delete it from `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
-3. Delete `%LOCALAPPDATA%\APOD\` and the `.exe`.
+2. Remove the `Nightglass` entry in **Settings → Apps → Startup** (or delete it from `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+3. Delete `%LOCALAPPDATA%\Nightglass\` and the `.exe`.
 
 ## Development
 

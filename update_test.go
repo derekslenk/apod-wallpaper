@@ -34,13 +34,13 @@ func TestNewerVersion(t *testing.T) {
 
 func TestParseLatestRelease(t *testing.T) {
 	tag, page, err := parseLatestRelease(strings.NewReader(
-		`{"tag_name":"v1.2.0","html_url":"https://github.com/derekslenk/apod-wallpaper/releases/tag/v1.2.0","assets":[]}`))
-	if err != nil || tag != "v1.2.0" || page != "https://github.com/derekslenk/apod-wallpaper/releases/tag/v1.2.0" {
+		`{"tag_name":"v1.2.0","html_url":"https://github.com/derekslenk/nightglass/releases/tag/v1.2.0","assets":[]}`))
+	if err != nil || tag != "v1.2.0" || page != "https://github.com/derekslenk/nightglass/releases/tag/v1.2.0" {
 		t.Fatalf("got %q %q %v", tag, page, err)
 	}
 	for _, body := range []string{
 		`not json`,
-		`{"tag_name":"latest","html_url":"https://github.com/derekslenk/apod-wallpaper/releases/tag/latest"}`,
+		`{"tag_name":"latest","html_url":"https://github.com/derekslenk/nightglass/releases/tag/latest"}`,
 		`{"tag_name":"v1.2.0","html_url":"https://evil.example/releases/tag/v1.2.0"}`,
 		`{"tag_name":"v1.2.0","html_url":"C:\\Windows\\System32\\calc.exe"}`,
 	} {

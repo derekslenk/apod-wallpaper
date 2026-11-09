@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	latestReleaseAPI  = "https://api.github.com/repos/derekslenk/apod-wallpaper/releases/latest"
-	releasePagePrefix = "https://github.com/derekslenk/apod-wallpaper/releases/"
+	latestReleaseAPI  = "https://api.github.com/repos/derekslenk/nightglass/releases/latest"
+	releasePagePrefix = "https://github.com/derekslenk/nightglass/releases/"
 )
 
 // parseVersion reads "vX.Y.Z". Anything else, including "dev", is not a version.

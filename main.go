@@ -43,17 +43,23 @@ type app struct {
 }
 
 func main() {
-	dir := filepath.Join(os.Getenv("LOCALAPPDATA"), "APOD")
+	// Checked before touching the data folder, so a running copy never has it open
+	// while it is migrated.
+	if !singleInstance() {
+		return
+	}
+	base := os.Getenv("LOCALAPPDATA")
+	dir := filepath.Join(base, "Nightglass")
+	migrateErr := migrateDataDir(filepath.Join(base, "APOD"), dir)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		os.Exit(1)
 	}
-	if f, err := os.OpenFile(filepath.Join(dir, "apod.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644); err == nil {
+	if f, err := os.OpenFile(filepath.Join(dir, logName), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644); err == nil {
 		log.SetOutput(f)
 	}
-	log.Printf("apod-wallpaper %s starting", version)
-	if !singleInstance() {
-		log.Print("already running; exiting")
-		return
+	log.Printf("nightglass %s starting", version)
+	if migrateErr != nil {
+		log.Printf("move old APOD data folder: %v (starting fresh)", migrateErr)
 	}
 	if err := ensureAutostart(); err != nil {
 		log.Printf("autostart: %v", err)
@@ -69,11 +75,11 @@ func main() {
 
 func (a *app) onReady() {
 	systray.SetIcon(makeIcon())
-	systray.SetTooltip("APOD Wallpaper")
+	systray.SetTooltip("Nightglass")
 	mUpdate := systray.AddMenuItem("Update available", "Open the release page")
 	mUpdate.Hide()
 	mRefresh := systray.AddMenuItem("Refresh now", "Fetch the latest APOD")
-	mOpen := systray.AddMenuItem("Open today's APOD page", "Open apod.nasa.gov")
+	mOpen := systray.AddMenuItem("Open today's APOD page", "Open science.nasa.gov/apod")
 	mStyle := systray.AddMenuItem("Bar style", "How the side bars blend with the picture")
 	mSoft := mStyle.AddSubMenuItemCheckbox("Soft blend", "Bars fade gently, horizons blur out", false)
 	mCrisp := mStyle.AddSubMenuItemCheckbox("Crisp follow", "Bars closely track the picture's edge", false)
@@ -88,7 +94,7 @@ func (a *app) onReady() {
 	}
 	showStyle(a.barStyle())
 	systray.AddSeparator()
-	mQuit := systray.AddMenuItem("Quit", "Exit APOD Wallpaper")
+	mQuit := systray.AddMenuItem("Quit", "Exit Nightglass")
 
 	go func() {
 		for {
@@ -141,7 +147,7 @@ func (a *app) latestRelease() (tag, page string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	req, _ := http.NewRequestWithContext(ctx, "GET", latestReleaseAPI, nil)
-	req.Header.Set("User-Agent", "apod-wallpaper")
+	req.Header.Set("User-Agent", "nightglass")
 	req.Header.Set("Accept", "application/vnd.github+json")
 	resp, err := a.client.Do(req)
 	if err != nil {
@@ -318,7 +324,7 @@ func renderFile(src, dst string, w, h int, style BarStyle) error {
 
 func (a *app) fetchEntries(ctx context.Context) ([]Entry, error) {
 	req, _ := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
-	req.Header.Set("User-Agent", "apod-wallpaper")
+	req.Header.Set("User-Agent", "nightglass")
 	resp, err := a.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -332,7 +338,7 @@ func (a *app) fetchEntries(ctx context.Context) ([]Entry, error) {
 
 func (a *app) download(ctx context.Context, u, dest string) error {
 	req, _ := http.NewRequestWithContext(ctx, "GET", u, nil)
-	req.Header.Set("User-Agent", "apod-wallpaper")
+	req.Header.Set("User-Agent", "nightglass")
 	resp, err := a.client.Do(req)
 	if err != nil {
 		return err

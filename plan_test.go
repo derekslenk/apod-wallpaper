@@ -116,7 +116,7 @@ func TestAssignWallpapersSingleImage(t *testing.T) {
 func TestFilesToDelete(t *testing.T) {
 	names := []string{
 		"2026-11-08.jpg", "2026-11-07.jpg", "2026-11-06.png", "2026-11-05.jpg",
-		"config.json", "apod.log", "2026-11-01.jpg",
+		"config.json", "nightglass.log", "2026-11-01.jpg",
 	}
 	got := filesToDelete(names, 3, map[string]bool{"2026-11-01.jpg": true})
 	want := []string{"2026-11-05.jpg"}

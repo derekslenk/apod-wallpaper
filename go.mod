@@ -1,4 +1,4 @@
-module apod-wallpaper
+module nightglass
 
 go 1.27.3
 

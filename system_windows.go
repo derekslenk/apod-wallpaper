@@ -31,11 +31,17 @@ func ensureAutostart() error {
 		return err
 	}
 	defer k.Close()
-	return k.SetStringValue("APOD Wallpaper", `"`+exe+`"`)
+	if err := k.SetStringValue("Nightglass", `"`+exe+`"`); err != nil {
+		return err
+	}
+	k.DeleteValue("APOD Wallpaper") // entry from before the rename; would start the old exe too
+	return nil
 }
 
 // singleInstance returns false if another copy is already running.
 func singleInstance() bool {
+	// Name kept from before the rename to Nightglass, so an old copy and a new
+	// one never run at the same time.
 	_, err := windows.CreateMutex(nil, false, mustUTF16(`Local\APODWallpaperSingleInstance`))
 	return err != windows.ERROR_ALREADY_EXISTS
 }
@@ -63,7 +69,7 @@ var competingWallpaperApps = []string{"BingWallpaper.exe", "wallpaper32.exe", "w
 func warnCompetingApps() {
 	for _, exe := range competingWallpaperApps {
 		if processRunning(exe) {
-			log.Printf("WARNING: %s is running and will likely overwrite the APOD wallpaper; quit it and disable its startup", exe)
+			log.Printf("WARNING: %s is running and will likely overwrite the Nightglass wallpaper; quit it and disable its startup", exe)
 		}
 	}
 }

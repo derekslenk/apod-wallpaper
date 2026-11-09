@@ -11,6 +11,25 @@ type settings struct {
 	BarStyle BarStyle `json:"bar_style"`
 }
 
+const logName = "nightglass.log"
+
+// migrateDataDir moves the data folder used before the rename to Nightglass
+// (%LOCALAPPDATA%\APOD) to its new place, keeping settings and downloads.
+// It does nothing if the new folder already exists or the old one doesn't.
+func migrateDataDir(oldDir, newDir string) error {
+	if _, err := os.Stat(newDir); err == nil {
+		return nil
+	}
+	if _, err := os.Stat(oldDir); err != nil {
+		return nil
+	}
+	if err := os.Rename(oldDir, newDir); err != nil {
+		return err
+	}
+	os.Rename(filepath.Join(newDir, "apod.log"), filepath.Join(newDir, logName))
+	return nil
+}
+
 func loadSettings(dir string) settings {
 	s := settings{BarStyle: BarsSoft}
 	if b, err := os.ReadFile(filepath.Join(dir, "settings.json")); err == nil {
