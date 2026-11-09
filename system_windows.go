@@ -3,13 +3,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
-	"image"
-	"image/color"
-	"image/png"
 	"log"
-	"math"
 	"os"
 	"strings"
 	"unsafe"
@@ -76,44 +70,4 @@ func warnCompetingApps() {
 
 func openURL(u string) {
 	windows.ShellExecute(0, mustUTF16("open"), mustUTF16(u), nil, nil, windows.SW_SHOWNORMAL)
-}
-
-// makeIcon draws a small night-sky disc with a few stars, wrapped as a .ico.
-func makeIcon() []byte {
-	const n = 32
-	img := image.NewNRGBA(image.Rect(0, 0, n, n))
-	for y := 0; y < n; y++ {
-		for x := 0; x < n; x++ {
-			dx, dy := float64(x)-15.5, float64(y)-15.5
-			d := math.Hypot(dx, dy)
-			if d <= 15 {
-				t := d / 15
-				img.Set(x, y, color.NRGBA{uint8(20 + 40*t), uint8(25 + 30*t), uint8(90 + 60*(1-t)), 255})
-			}
-		}
-	}
-	star := func(cx, cy int, big bool) {
-		img.Set(cx, cy, color.White)
-		if big {
-			for _, o := range [][2]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}} {
-				img.Set(cx+o[0], cy+o[1], color.NRGBA{255, 240, 200, 255})
-			}
-		}
-	}
-	star(10, 10, true)
-	star(21, 14, true)
-	star(14, 22, false)
-	star(23, 23, false)
-	star(8, 18, false)
-
-	var pngBuf bytes.Buffer
-	png.Encode(&pngBuf, img)
-
-	var ico bytes.Buffer
-	binary.Write(&ico, binary.LittleEndian, []uint16{0, 1, 1})                  // ICONDIR
-	ico.Write([]byte{n, n, 0, 0})                                               // w, h, colors, reserved
-	binary.Write(&ico, binary.LittleEndian, []uint16{1, 32})                    // planes, bpp
-	binary.Write(&ico, binary.LittleEndian, []uint32{uint32(pngBuf.Len()), 22}) // size, offset
-	ico.Write(pngBuf.Bytes())
-	return ico.Bytes()
 }

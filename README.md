@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.svg" width="128" alt="Nightglass logo: a crescent moon and a star on a night-blue square"></p>
+
 # Nightglass
 
 Nightglass is a small Windows tray app that sets NASA's [Astronomy Picture of the Day](https://science.nasa.gov/apod/) (APOD) as your desktop wallpaper, every day, on every monitor. It was formerly called **APOD Wallpaper**.

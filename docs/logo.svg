@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Nightglass logo">
+  <!-- Same drawing as logoAt in icon.go (unit coordinates x100). -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c307a"/>
+      <stop offset="1" stop-color="#0c0e2a"/>
+    </linearGradient>
+    <mask id="bite">
+      <rect width="100" height="100" fill="#fff"/>
+      <circle cx="58" cy="44" r="25" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#sky)"/>
+  <circle cx="45" cy="56" r="30" fill="#ffe08c" mask="url(#bite)"/>
+  <path d="M72 15Q72 29 86 29Q72 29 72 43Q72 29 58 29Q72 29 72 15Z" fill="#fff"/>
+</svg>
