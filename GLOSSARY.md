@@ -12,6 +12,10 @@ _Avoid_: Today's picture, today's APOD
 The still-image APOD immediately before the Latest picture.
 _Avoid_: Yesterday's picture
 
+**Refresh**:
+One pass that brings every monitor up to date with the feed: fetch, choose the Latest and Previous pictures, render, apply, and prune old downloads.
+_Avoid_: Update (reserved for a newer Nightglass release), sync
+
 ## Monitors
 
 **Main monitor**:
