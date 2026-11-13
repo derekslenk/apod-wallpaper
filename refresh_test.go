@@ -75,7 +75,7 @@ func newTestRefresher(t *testing.T) (*refresher, *fakeDesktop, *testFeed) {
 	t.Helper()
 	tf := newTestFeed(t)
 	d := &fakeDesktop{}
-	return &refresher{dir: t.TempDir(), feedURL: tf.srv.URL + "/feed", client: tf.srv.Client(), desktop: d.set}, d, tf
+	return &refresher{folder: &dataFolder{dir: t.TempDir()}, feedURL: tf.srv.URL + "/feed", client: tf.srv.Client(), desktop: d.set}, d, tf
 }
 
 func TestRefreshPairsLatestWithMainAndPreviousWithSide(t *testing.T) {
@@ -115,20 +115,20 @@ func TestRefreshReusesDownloadsAndRenders(t *testing.T) {
 func TestRefreshPrunesOldDownloadsOnly(t *testing.T) {
 	r, _, _ := newTestRefresher(t)
 	for i := 1; i <= 8; i++ {
-		os.WriteFile(filepath.Join(r.dir, fmt.Sprintf("2026-01-%02d.jpg", i)), []byte("x"), 0o644)
+		os.WriteFile(filepath.Join(r.folder.dir, fmt.Sprintf("2026-01-%02d.jpg", i)), []byte("x"), 0o644)
 	}
-	os.WriteFile(filepath.Join(r.dir, "settings.json"), []byte("{}"), 0o644)
-	os.WriteFile(filepath.Join(r.dir, logName), []byte("log"), 0o644)
+	os.WriteFile(filepath.Join(r.folder.dir, "settings.json"), []byte("{}"), 0o644)
+	os.WriteFile(r.folder.logPath(), []byte("log"), 0o644)
 	if _, err := r.refresh(context.Background(), BarsSoft); err != nil {
 		t.Fatal(err)
 	}
 	var dated []string
 	for _, f := range []string{"settings.json", logName, "2026-11-08.png", "2026-11-07.png"} {
-		if _, err := os.Stat(filepath.Join(r.dir, f)); err != nil {
+		if _, err := os.Stat(filepath.Join(r.folder.dir, f)); err != nil {
 			t.Errorf("%s was deleted", f)
 		}
 	}
-	ents, _ := os.ReadDir(r.dir)
+	ents, _ := os.ReadDir(r.folder.dir)
 	for _, e := range ents {
 		if datedFile.MatchString(e.Name()) {
 			dated = append(dated, e.Name())
@@ -137,7 +137,7 @@ func TestRefreshPrunesOldDownloadsOnly(t *testing.T) {
 	if len(dated) != keepImages {
 		t.Errorf("dated files after prune = %v, want %d", dated, keepImages)
 	}
-	if _, err := os.Stat(filepath.Join(r.dir, "2026-01-01.jpg")); err == nil {
+	if _, err := os.Stat(filepath.Join(r.folder.dir, "2026-01-01.jpg")); err == nil {
 		t.Error("oldest download survived the prune")
 	}
 }
