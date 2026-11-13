@@ -89,14 +89,6 @@ func (e Entry) isImage() bool {
 	return false
 }
 
-// localFileName is "YYYY-MM-DD.ext", using the image's own extension.
-func (e Entry) localFileName() string {
-	if e.isImage() {
-		return e.Date + e.ext()
-	}
-	return e.Date + ".jpg"
-}
-
 // pickImages returns up to n image entries, newest first, skipping videos and
 // other non-image days.
 func pickImages(entries []Entry, n int) []Entry {
@@ -144,25 +136,4 @@ func assignWallpapers(monitors []Monitor, paths []string) map[string]string {
 		}
 	}
 	return out
-}
-
-var datedFile = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}\.[a-z]+$`)
-
-// filesToDelete returns downloaded images beyond the newest `keep`,
-// never including any file in inUse.
-func filesToDelete(names []string, keep int, inUse map[string]bool) []string {
-	var dated []string
-	for _, n := range names {
-		if datedFile.MatchString(n) {
-			dated = append(dated, n)
-		}
-	}
-	sort.Sort(sort.Reverse(sort.StringSlice(dated)))
-	var del []string
-	for i, n := range dated {
-		if i >= keep && !inUse[n] {
-			del = append(del, n)
-		}
-	}
-	return del
 }

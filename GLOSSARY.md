@@ -16,6 +16,10 @@ _Avoid_: Yesterday's picture
 One pass that brings every monitor up to date with the feed: fetch, choose the Latest and Previous pictures, render, apply, and prune old downloads.
 _Avoid_: Update (reserved for a newer Nightglass release), sync
 
+**Data folder**:
+The per-user folder where Nightglass keeps its downloaded pictures, rendered wallpapers, settings and log (`%LOCALAPPDATA%\Nightglass`).
+_Avoid_: Cache, store, app data
+
 ## Monitors
 
 **Main monitor**:

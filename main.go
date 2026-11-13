@@ -43,12 +43,12 @@ func main() {
 		return
 	}
 	base := os.Getenv("LOCALAPPDATA")
-	dir := filepath.Join(base, "Nightglass")
-	migrateErr := migrateDataDir(filepath.Join(base, "APOD"), dir)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	folder := &dataFolder{dir: filepath.Join(base, "Nightglass")}
+	migrateErr := folder.migrateFrom(filepath.Join(base, "APOD"))
+	if err := os.MkdirAll(folder.dir, 0o755); err != nil {
 		os.Exit(1)
 	}
-	if f, err := os.OpenFile(filepath.Join(dir, logName), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644); err == nil {
+	if f, err := os.OpenFile(folder.logPath(), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644); err == nil {
 		log.SetOutput(f)
 	}
 	log.Printf("nightglass %s starting", version)
@@ -60,11 +60,11 @@ func main() {
 	}
 	client := &http.Client{Timeout: 2 * time.Minute}
 	a := &app{
-		r:       &refresher{dir: dir, feedURL: feedURL, client: client, desktop: setWallpapers},
+		r:       &refresher{folder: folder, feedURL: feedURL, client: client, desktop: setWallpapers},
 		client:  client,
 		trigger: make(chan struct{}, 1),
 	}
-	a.style.Store(loadSettings(dir).BarStyle)
+	a.style.Store(folder.loadSettings().BarStyle)
 	systray.Run(a.onReady, func() {})
 }
 
@@ -165,7 +165,7 @@ func (a *app) setBarStyle(st BarStyle) {
 		return
 	}
 	a.style.Store(st)
-	if err := saveSettings(a.r.dir, settings{BarStyle: st}); err != nil {
+	if err := a.r.folder.saveSettings(settings{BarStyle: st}); err != nil {
 		log.Printf("save settings: %v", err)
 	}
 	log.Printf("bar style -> %s", st)
